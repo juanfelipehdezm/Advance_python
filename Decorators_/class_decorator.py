@@ -38,7 +38,6 @@ class timed:
     
 
 @timed(10)
-
 def calc_fibonachi(n):
     """
     This function calculates the nth Fibonacci number using dynamic programming.
