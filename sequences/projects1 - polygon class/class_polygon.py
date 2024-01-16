@@ -79,8 +79,53 @@ class Polygon:
 polygon1 = Polygon(3, 3)
 polygon2 = Polygon(5,5)
 
-print(polygon2.__gt__(polygon1))
+#print(polygon2.__gt__(polygon1))
 
 
 #print(polygon.apothem)
 
+#my sequence class 
+
+class Polygons_sqc:
+    
+    def __init__(self, M: int, R: float ) -> None:
+        if M < 3:
+            raise ValueError("M must be grather than 3")
+        
+        self.M = M
+        self.R = R
+        #a poligons private attributes which is going to store the poligons created with the 
+        #Polygons class
+
+        self.polygons = [Polygon(i,R) for i in range(3, M+1)]
+
+
+    def __len__(self):
+        return self.M
+    
+    def __repr__(self) -> str:
+        return f"Polygons(M ={self.M}, R = {self.R})"
+    
+    def __getitem__(self,s):
+        return self.polygons[s]
+    
+    @property
+    def max_efficiency_polygon_sorting(self):
+        return sorted(
+            self.polygons, key=lambda p: p.area / p.perimeter, reverse=True
+        )        
+    
+
+
+polygons = Polygons_sqc(5,3)
+
+#for p in polygons:print(p)
+#Polygon(n=3, R=3)
+#Polygon(n=4, R=3)
+#Polygon(n=5, R=3)
+
+#list_of_polygons = list(polygons)
+
+#print(list_of_polygons)
+
+print(polygons.max_efficiency_polygon_sorting)
