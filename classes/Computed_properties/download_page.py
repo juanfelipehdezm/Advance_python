@@ -43,7 +43,6 @@ class Web_page_dowload():
     
     #method used to change the info contained on those attributes that are read only and computed
     #only when needed
-
     def download_page(self):
         start_time = tm.perf_counter()
 
