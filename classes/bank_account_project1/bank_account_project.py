@@ -111,7 +111,17 @@ class Account:
     #this is going return a new transction id each time it gets called
     transaction_counter = itertools.count(100)
 
-    def __init__(self, account_number: str, first_name: str, last_name: str):
+    _INTERES_RATE = 0.5
+
+    _transaction_code = {
+        "deposit" : "D",
+        "withdraw" : "W",
+        "interest" : "I",
+        "rejected" : "R"
+    }
+
+    def __init__(self, account_number: str, first_name: str, last_name: str, 
+                 prefer_timezone = None, initial_balance = 0.0):
 
         if len(account_number) < 5:
             raise ValueError("The minimun length for an account if five characters")
@@ -123,6 +133,13 @@ class Account:
         
         self._first_name = first_name
         self._last_name = last_name
+
+        if prefer_timezone is None: 
+            prefer_timezone = TimeZone("UTC",0,0)
+
+        self._prefer_timezone = prefer_timezone
+
+        self._balance = initial_balance
 
 
     @property
@@ -144,6 +161,33 @@ class Account:
     def last_Name(self, new_last_name):
         self._last_name = Account.validate_firstOrLast_name(new_last_name, "Last Name")
 
+    @property
+    def prefer_timezone(self):
+        return self._prefer_timezone    
+
+
+    @prefer_timezone.setter
+    def prefer_timezone(self, new_timezone):
+        if not isinstance(new_timezone, TimeZone):
+            raise ValueError("Time Zone must be a valid TimeZone object")
+        self._prefer_timezone = new_timezone
+
+
+    @property
+    def balance(self):
+        return self._balance
+    
+    @classmethod
+    def get_interest_rate(cls):
+        return cls._INTERES_RATE
+    
+    @classmethod
+    def set_interest_rate(cls,new_rate):
+        if not isinstance(new_rate, float) or new_rate < 0:
+            raise ValueError("Interest rate must be a real number and can not be negative")
+        
+        cls._INTERES_RATE = new_rate
+
     @staticmethod
     def validate_firstOrLast_name(value, fiel_title):
         if not isinstance(value, str) or len(value.strip()) == 0:
@@ -155,3 +199,5 @@ class Account:
 
 #a1 = Account("ABC111", "Juan", "Hernandez")
 #print(a1)
+    
+
