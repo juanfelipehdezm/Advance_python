@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime,timezone
 from collections import namedtuple
 import itertools
+import numbers
 
 #********************************************************************************
 #************************TimeZone Class*******************************************
@@ -231,7 +232,59 @@ class Account:
         return Account.Confirmation(account_number, transaction_code, 
                             trasaction_counter_id,dt_utc.isoformat(), dt_preferred_str )
 
+    def deposit(self, amount_to_deposit):
+        min_deposit_value = 50000
+
+        if not isinstance(amount_to_deposit, numbers.Real):
+            raise ValueError("Deposit value must be a real number")
         
+        if amount_to_deposit < min_deposit_value:
+            raise ValueError(f"The minimun deposit value is {min_deposit_value}$")
+
+        transaction_code = Account._transactions_code["deposit"]
+
+        confirmation_code = self.generate_confirmation_code(transaction_code)
+
+        self._balance += amount_to_deposit
+
+        return confirmation_code
+    
+    def withdraw(self, amount_to_withdraw):
+
+        accepted = False
+
+        if not isinstance(amount_to_withdraw, numbers.Real):
+            raise ValueError("Withdraw value must be a real number")
+        
+        if amount_to_withdraw <= 0:
+            raise ValueError("Withdraw can not be negative")
+        
+        if self.balance - amount_to_withdraw < 0:
+            transaction_code = Account._transactions_code["rejected"]
+
+        else:
+            accepted = True
+            transaction_code = Account._transactions_code["withdraw"]
+
+        confirmation_code = self.generate_confirmation_code(transaction_code)
+
+        if accepted:
+            self._balance -= amount_to_withdraw
+
+        return confirmation_code
+
+                 
+    def pay_interest(self):
+        interest_earn = self._balance * Account.get_interest_rate() / 100
+
+        confirmation_code = self.generate_confirmation_code(Account._transactions_code["interest"])
+
+        self._balance += interest_earn
+
+        return confirmation_code
+
+
+
     
     def __repr__(self):
         return (f"Account = ({self._account_number}, {self._first_name}, {self._last_name})")
@@ -250,3 +303,12 @@ parse_conf_code = a1.parse_confirmation_code(conf_code, prefered_time_zone)
 print(parse_conf_code)
 #Confirmation(account_number='ABC111', transaction_code='dummy', transaction_id='100', time_utc='2024-03-01T01:03:06', preferred_time='2024-02-29 20:03:06 (GMT-5)')
 """
+
+
+print(a1.deposit(100000))
+
+print(a1.balance)
+
+print(a1.withdraw(5000))
+
+print(a1.balance)
