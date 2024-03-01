@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime,timezone
+from collections import namedtuple
 import itertools
 
 #********************************************************************************
@@ -113,12 +114,15 @@ class Account:
 
     _INTERES_RATE = 0.5
 
-    _transaction_code = {
+    _transactions_code = {
         "deposit" : "D",
         "withdraw" : "W",
         "interest" : "I",
         "rejected" : "R"
     }
+
+
+    Confirmation = namedtuple("Confirmation", "account_number transaction_code transaction_id time_utc preferred_time")
 
     def __init__(self, account_number: str, first_name: str, last_name: str, 
                  prefer_timezone = None, initial_balance = 0.0):
@@ -193,11 +197,56 @@ class Account:
         if not isinstance(value, str) or len(value.strip()) == 0:
             raise ValueError(f"{fiel_title} cannot be empty")
         return value.strip().capitalize()
+    
+    def generate_confirmation_code(self, transaction_code:str) -> str:
+        dt_str = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        return f"{transaction_code}-{self.account_number}-{dt_str}-{next(Account.transaction_counter)}"
+
+
+    @staticmethod
+    def parse_confirmation_code(confirmation_code, preferred_time_zone = None):
+        #dummy-A100-20240229073715-101
+        parts = confirmation_code.split("-")
+
+        if len(parts) != 4:
+            raise ValueError("Invalid confirmation Code")
+
+        transaction_code, account_number, raw_dt_utc, trasaction_counter_id = parts
+
+        try:
+            dt_utc = datetime.strptime(raw_dt_utc, "%Y%m%d%H%M%S")
+        except ValueError as ex:
+            raise ValueError("Invalid transaction datetime") from ex
         
+        if preferred_time_zone is None:
+            preferred_time_zone = TimeZone("UTC", 0, 0)
+
+        if not isinstance(preferred_time_zone,TimeZone):
+            raise ValueError("Invalid TimeZone object")
+        
+        dt_preferred = dt_utc + preferred_time_zone.offset
+
+        dt_preferred_str = f"{dt_preferred.strftime('%Y-%m-%d %H:%M:%S')} ({preferred_time_zone.name})"
+
+        return Account.Confirmation(account_number, transaction_code, 
+                            trasaction_counter_id,dt_utc.isoformat(), dt_preferred_str )
+
+        
+    
     def __repr__(self):
         return (f"Account = ({self._account_number}, {self._first_name}, {self._last_name})")
 
-#a1 = Account("ABC111", "Juan", "Hernandez")
-#print(a1)
-    
+a1 = Account("ABC111", "Juan", "Hernandez")
 
+"""
+conf_code = a1.generate_confirmation_code("dummy") 
+
+print(conf_code)
+#dummy-ABC111-20240301010306-100
+
+prefered_time_zone = TimeZone("GMT-5", -5,0)
+parse_conf_code = a1.parse_confirmation_code(conf_code, prefered_time_zone)
+
+print(parse_conf_code)
+#Confirmation(account_number='ABC111', transaction_code='dummy', transaction_id='100', time_utc='2024-03-01T01:03:06', preferred_time='2024-02-29 20:03:06 (GMT-5)')
+"""
