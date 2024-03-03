@@ -6,29 +6,34 @@ import numbers
 #********************************************************************************
 #************************TimeZone Class*******************************************
 class TimeZone:
-    """Represents a time zone with a name and offset in hours and minutes.
+    """
+    **Summary:**
 
-        Args:
-            name (str): The name of the time zone.
-            offset_hours (int): The hour offset of the time zone.
-            offset_minutes (int): The minute offset of the time zone.
+    Represents a time zone with its name and offset from Coordinated Universal Time (UTC).
 
-        Returns:
-            None
+    **Attributes:**
 
-        Raises:
-            ValueError: If the timezone name is empty, hour offset is not an integer, minute offset is not an integer,
-                        minute offset is not between -59 and 59, or offset is not between -12:00 and 14:00.
+    * `name (str)`: The name of the time zone.
+    * `offset (timedelta)`: The time offset from UTC, expressed as a `timedelta` object.
+    * `offset_hours (int)`: The hours component of the offset.
+    * `offset_minutes (int)`: The minutes component of the offset.
 
-        Examples:
-            tz = TimeZone('GMT', 0, 0)
-        """
+    **Methods:**
 
-    """Returns the offset of the time zone."""
-    """Returns the name of the time zone."""
-    """Compares the current time zone with another time zone for equality."""
-    """Returns a string representation of the time zone."""
+    * `__init__(self, name: str, offset_hours: int, offset_minutes: int)`: Initializes a `TimeZone` object with the given name and offset.
+    * `offset(self) -> timedelta`: Returns the time offset from UTC.
+    * `name(self) -> str`: Returns the name of the time zone.
+    * `__eq__(self, other_timezone) -> bool`: Compares two `TimeZone` objects for equality.
+    * `__repr__(self) -> str`: Returns a string representation of the `TimeZone` object.
 
+    **Raises:**
+
+    * `ValueError`: If any of the following conditions are not met:
+        * The time zone name is empty.
+        * The offset hours or minutes are not integers.
+        * The offset minutes are outside the range of -59 to 59.
+        * The total offset is outside the range of -12:00 to 14:00.
+    """
     def __init__(self, name: str, offset_hours: int, offset_minutes: int):
         if name is None:
             raise ValueError("Timezone name can not be empty")
@@ -89,27 +94,48 @@ class Account:
     """
     **Summary:**
 
-    This class represents a bank account with attributes for account number, first name, and last name.
-
-    **Explanation:**
-
-    This class initializes an `Account` object with an account number, first name, and last name. 
-    It provides properties for accessing these attributes and methods for setting first and last names, validating names, and generating a string representation of the account.
+    This class represents a bank account with attributes for account number, owner's name, balance, preferred time zone, and interest rate. 
+    It also provides methods for account management, including deposits, withdrawals, and interest payments.
 
     **Attributes:**
 
     * `account_number (str)`: The unique identifier for the account.
     * `first_name (str)`: The owner's first name.
     * `last_name (str)`: The owner's last name.
-    
-    **Raises:**
+    * `_balance (float)`: The current balance of the account.
+    * `_prefer_timezone (TimeZone)`: The preferred time zone for displaying transactions. (default: UTC)
+    * `_transactions_code (dict)`: Internal dictionary mapping transaction types to their codes.
+    * `_INTERES_RATE (float)`: The annual interest rate applied to the account (as a decimal).
 
-    * `ValueError`:
-        * If the account number is less than 5 characters.
-        * If the first name or last name is empty or null.
-        * If the provided value for first or last name is not a string.
-    """
+    **Nested Class:**
 
+    * `Confirmation(namedtuple)`: Represents a confirmation record for an account transaction with attributes:
+        * `account_number (str)`: The account number involved in the transaction.
+        * `transaction_code (str)`: The code representing the transaction type (deposit, withdrawal, interest, etc.).
+        * `transaction_id (str)`: A unique identifier for the transaction.
+        * `time_utc (str)`: The UTC timestamp of the transaction in ISO 8601 format.
+        * `preferred_time (str)`: The transaction time displayed in the preferred time zone.
+
+    **Methods:**
+
+    * `__init__(self, account_number: str, first_name: str, last_name: str, prefer_timezone=None, initial_balance=0.0)`: Initializes an `Account` object with the given attributes.
+    * `account_number (self) -> str`: Returns the account number. (property)
+    * `first_name (self) -> str`: Returns the first name. (property)
+    * `first_name (self, new_name: str)`: Sets the first name after validation. (setter)
+    * `last_name (self) -> str`: Returns the last name. (property)
+    * `last_name (self, new_last_name: str)`: Sets the last name after validation. (setter)
+    * `prefer_timezone (self) -> TimeZone`: Returns the preferred time zone. (property)
+    * `prefer_timezone (self, new_timezone: TimeZone)`: Sets the preferred time zone. (setter)
+    * `balance (self) -> float`: Returns the account balance. (property)
+    * `@classmethod get_interest_rate(cls) -> float`: Returns the current annual interest rate (as a percentage).
+    * `@classmethod set_interest_rate(cls, new_rate: float)`: Sets the annual interest rate (must be a decimal between 0 and 1).
+    * `@staticmethod validate_firstOrLast_name(value: str, fiel_title: str) -> str`: Validates and capitalizes the given name.
+    * `generate_confirmation_code(self, transaction_code: str) -> str`: Generates a unique confirmation code for a transaction.
+    * `@staticmethod parse_confirmation_code(confirmation_code: str, preferred_time_zone=None) -> Confirmation`: Parses a confirmation code and returns a `Confirmation` namedtuple.
+    * `deposit(self, amount_to_deposit: numbers.Real) -> str`: Deposits a specified amount and returns a confirmation code.
+    * `withdraw(self, amount_to_withdraw: numbers.Real) -> str`: Attempts to withdraw an amount and returns a confirmation code (success or rejection).
+    * `pay_interest(self) -> str`: Calculates and deposits interest, returning a confirmation code.
+"""
     #this is going return a new transction id each time it gets called
     transaction_counter = itertools.count(100)
 
@@ -282,9 +308,6 @@ class Account:
         self._balance += interest_earn
 
         return confirmation_code
-
-
-
     
     def __repr__(self):
         return (f"Account = ({self._account_number}, {self._first_name}, {self._last_name})")
