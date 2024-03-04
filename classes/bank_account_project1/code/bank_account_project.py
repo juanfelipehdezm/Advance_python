@@ -170,6 +170,8 @@ class Account:
 
         self._prefer_timezone = prefer_timezone
 
+        if initial_balance < 0:
+            raise ValueError("Balance can not be negative")
         self._balance = initial_balance
 
 
