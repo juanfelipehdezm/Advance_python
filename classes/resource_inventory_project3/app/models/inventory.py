@@ -109,3 +109,60 @@ class Resource:
             self.total += 1
 
         
+class CPU(Resource):
+
+    """
+    **Summary:**
+
+    This class represents a Central Processing Unit (CPU) resource, inheriting from the base `Resource` class. It extends the resource concept with CPU-specific attributes like core count, socket type, and power consumption.
+
+    **Attributes:**
+
+    * Inherits all attributes from the `Resource` class (name, manufacturer, total, allocated).
+    * `cores (int)`: The number of CPU cores. (must be between 2 and 64, inclusive)
+    * `socket (str)`: The CPU socket type.
+    * `power_watts (int)`: The power consumption of the CPU in watts. (must be between 10 and 1000 watts, inclusive)
+
+    **Methods:**
+
+    * Inherits all methods from the `Resource` class.
+
+    **Notes:**
+
+    * The `validate_integer` function (assumed to exist elsewhere) is used internally to validate integer arguments and raise appropriate exceptions for invalid values.
+
+    **Str Repr:**
+
+    * `__repr__(self) -> str`: Returns a detailed string representation of the CPU resource, including category, name, socket type, and core count.
+
+    """
+
+    def __init__(self, name: str, manufacturer: str, total: int, allocated: int,
+                       cores: int, socket:str, power_watts: int) -> None:
+        
+        super().__init__(name, manufacturer, total, allocated)
+
+        if validate_integer("cores",cores, min_value=2, max_value=64):
+            self._cores = cores
+
+        self._socket = socket
+
+        if validate_integer("power_watts", power_watts, min_value=10, max_value=1000):
+            self._power_watts = power_watts
+
+
+    @property
+    def cores(self):
+        return self._cores
+    
+    @property
+    def socket(self):
+        return self._socket
+    
+    @property
+    def power_watts(self):
+        return self._power_watts
+    
+    def __repr__(self) -> str:
+        return f"{self.category}: {self.name} ({self.socket} - x{self.cores})"
+    
