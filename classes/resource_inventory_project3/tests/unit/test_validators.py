@@ -1,6 +1,15 @@
 """
 Tests the validator functions
 Command line: python -m pytest tests (this should be executed on the root directory)
+
+Tests for the `validate_integer` function within the `app.utils.validators` module.
+
+**Test Cases:**
+
+* `test_valid`: Ensures that the function accepts valid integer values within the specified range.
+* `test_type_error`: Asserts that the function raises a `TypeError` when a non-integer value is provided.
+* `test_min_err_msg`: Verifies that the function raises a `ValueError` with the expected message when the argument value is below the minimum allowed value.
+* `test_max_err_msg`: Verifies that the function raises a `ValueError` with the expected message when the argument value is above the maximum allowed value.
 """
 import pytest
 

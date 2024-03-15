@@ -3,7 +3,38 @@
 from app.utils.validators import validate_integer
 
 class Resource:
-    """Base calss for resources"""
+    """
+    **Summary:**
+
+    This class serves as the base class for representing resources within a system. It defines common attributes and methods for managing the total quantity, allocated quantity, and availability of a resource.
+
+    **Attributes:**
+
+    * `name (str)`: The name of the resource.
+    * `manufacturer (str)`: The manufacturer of the resource.
+    * `total (int)`: The total quantity of the resource available. (must be non-negative)
+    * `allocated (int)`: The quantity of the resource currently allocated. (must be non-negative and less than or equal to total)
+    * `category (str)`: The resource category derived from the class name (lowercase). (read-only)
+    * `available (int)`: The quantity of the resource currently available for allocation (calculated property). (read-only)
+
+    **Methods:**
+
+    * `__init__(self, name: str, manufacturer: str, total: int, allocated: int) -> None`  
+    Initializes a `Resource` object with the given name, manufacturer, total quantity, and allocated quantity.
+    * `claim(self, num_inv_to_claim: int) -> None`: Allocates a specified number of resources to the allocated pool. (argument must be a positive integer)
+    * `freeup(self, num_to_free: int) -> None`: Releases a specified number of resources from the allocated pool back to the available pool. (argument must be a positive integer, and cannot exceed the currently allocated amount)
+    * `died(self, num_of_dies: int) -> None`: Reduces the total and allocated quantities by a specified number, representing resource loss. (argument must be a non-negative integer, and cannot exceed the currently allocated amount)
+    * `purchased(self, num_purchases: int) -> None`: Increases the total quantity of the resource by a specified number, representing a purchase. (argument must be a positive integer)
+
+    **Notes:**
+
+    * The `validate_integer` function (assumed to exist elsewhere) is used internally to validate integer arguments and raise appropriate exceptions for invalid values.
+
+    **Str and Repr:**
+
+    * `__str__(self) -> str`: Returns the resource name.
+    * `__repr__(self) -> str`: Returns a detailed string representation of the resource, including name, category, manufacturer, total quantity, and allocated quantity.
+"""
 
     def __init__(self, name:str, manufacturer:str,total:int, allocated:int) -> None:
 

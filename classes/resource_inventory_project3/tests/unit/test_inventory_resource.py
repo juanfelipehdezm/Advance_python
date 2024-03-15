@@ -1,5 +1,26 @@
 """Test for Resource class
-command line: python -m pytest tests (this should be executed on the root directory)"""
+command line: python -m pytest tests (this should be executed on the root directory)
+
+**Test Suite for the `Resource` Class (from `app.models.inventory`):**
+
+This test suite verifies the functionality of the `Resource` class, focusing on:
+
+* **Resource Creation:**
+    * `test_create_resource`: Ensures a `Resource` object is created with correct initial values.
+    * `test_create_invalid_int_type`: Tests that invalid integer types (strings) raise `TypeError` for `total` and `allocated` properties.
+    * `test_create_invalid_int_value`: Tests that invalid integer values (negative `total`, `allocated` exceeding `total`) raise `ValueError` during initialization.
+* **Resource Methods:**
+    * `test_claim`: Verifies that the `claim` method correctly updates the `allocated` property without affecting `total`.
+
+**Fixtures:**
+
+* `resource_values`: Provides a dictionary with default resource attributes for test cases.
+* `resource`: Creates a `Resource` object using the `resource_values` fixture.
+
+**Test Data:**
+
+* `test_create_invalid_int_type` and `test_create_invalid_int_value` use `pytest.mark.parametrize` to efficiently test multiple scenarios with different invalid values.
+"""
 
 import pytest
 
