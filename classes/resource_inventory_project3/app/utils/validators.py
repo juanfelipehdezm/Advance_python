@@ -51,6 +51,7 @@ def validate_integer(
     if max_value is not None and arg_value > max_value:
         raise ValueError(f"{arg_name} can not be greather than {max_value}")
     
+    return True
 
 
     

@@ -1,5 +1,5 @@
 """
-Tests tje validator functions
+Tests the validator functions
 Command line: python -m pytest tests (this should be executed on the root directory)
 """
 import pytest
