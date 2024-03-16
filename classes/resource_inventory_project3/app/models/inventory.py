@@ -166,3 +166,43 @@ class CPU(Resource):
     def __repr__(self) -> str:
         return f"{self.category}: {self.name} ({self.socket} - x{self.cores})"
     
+
+class Storage(Resource):
+    """
+    **Summary:**
+
+    This class represents a storage resource, inheriting from the base `Resource` class. It adds a storage-specific attribute, `capacity_gb`, for representing storage capacity in gigabytes.
+
+    **Attributes:**
+
+    * Inherits all attributes from the `Resource` class (name, manufacturer, total, allocated).
+    * `capacity_gb (int)`: The storage capacity in gigabytes. (must be at least 250GB).
+
+    **Methods:**
+
+    * Inherits all methods from the `Resource` class.
+
+    **Notes:**
+
+    * The `validate_integer` function (assumed to exist elsewhere) is used internally to validate the `capacity_gb` argument and raise a `ValueError` for invalid values.
+
+    **Str Repr:**
+
+    * `__repr__(self) -> str`: Returns a string representation of the storage resource, indicating its category and capacity in gigabytes.
+
+    """
+    
+    def __init__(self, name: str, manufacturer: str, total: int, allocated: int, capacity_gb:int) -> None:
+        super().__init__(name, manufacturer, total, allocated)
+
+        if validate_integer("capacity_gb", capacity_gb, min_value=250):
+            self._capacity_gb = capacity_gb
+
+        
+    @property
+    def capacity_gb(self):
+        return self._capacity_gb
+    
+    def __repr__(self):
+        return f"({self.category}: {self.capacity_gb})"
+        
