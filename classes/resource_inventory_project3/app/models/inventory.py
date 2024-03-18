@@ -206,3 +206,95 @@ class Storage(Resource):
     def __repr__(self):
         return f"({self.category}: {self.capacity_gb})"
         
+
+class HDD(Storage):
+    """
+    **Summary:**
+
+    This class represents a Hard Disk Drive (HDD) resource, inheriting from the `Storage` class. It extends the storage concept with HDD-specific attributes like size (in inches) and rotation speed (RPM).
+
+    **Attributes:**
+
+    * Inherits all attributes from the `Storage` class (name, manufacturer, total, allocated, capacity_gb).
+    * `size (str)`: The physical size of the HDD in inches (either '2.5"' or '3.5"').
+    * `rpm (int)`: The rotation speed of the HDD in revolutions per minute (RPM). (must be between 1000 and 5000 inclusive)
+
+    **Methods:**
+
+    * Inherits all methods from the `Storage` class.
+
+    **Notes:**
+
+    * The `validate_integer` function (assumed to exist elsewhere) is used internally to validate the `rpm` argument and raise a `ValueError` for invalid values.
+
+    **Str Repr:**
+
+    * `__repr__(self) -> str`: Returns a string representation of the HDD resource, inheriting from the `Storage` class representation and adding size and RPM information.
+
+    """
+
+    def __init__(self, name: str, manufacturer: str, total: int, allocated: int, capacity_gb: int,
+                 size: str, rpm: int)-> None:
+        super().__init__(name, manufacturer, total, allocated, capacity_gb)
+
+        allow_sizes = ['2.5"', '3.5"']
+
+        if size not in allow_sizes:
+            raise ValueError(f"Invalid HDD size. Must be on of {','.join(allow_sizes)}")
+        self._size = size
+
+        if validate_integer("rpm", rpm, min_value=1000, max_value=5000):
+            self._rpm = rpm
+
+    
+    @property
+    def size(self):
+        return self._size
+    
+    @property
+    def rpm(self):
+        return self._rpm
+    
+    def __repr__(self):
+        s = super().__repr__()
+        return f"{s} ({self.size}, {self.rpm} rpm)"
+    
+
+class SDD(Storage):
+    """
+    **Summary:**
+
+    This class represents a Solid State Drive (SSD) resource, inheriting from the `Storage` class. It focuses on the interface type (e.g., SATA, NVMe) as a distinguishing factor for SSDs.
+
+    **Attributes:**
+
+    * Inherits all attributes from the `Storage` class (name, manufacturer, total, allocated, capacity_gb).
+    * `interface (str)`: The communication interface of the SSD (e.g., SATA, NVMe).
+
+    **Methods:**
+
+    * Inherits all methods from the `Storage` class.
+
+    **Notes:**
+
+    * The docstring assumes further details about valid interface types can be found in the code or documentation.
+
+    **Str Repr:**
+
+    * `__repr__(self) -> str`: Returns a string representation of the SDD resource, inheriting from the `Storage` class representation and adding the interface information.
+    """
+
+    def __init__(self, name: str, manufacturer: str, total: int, allocated: int, capacity_gb: int,interface: str)-> None:
+        super().__init__(name, manufacturer, total, allocated, capacity_gb)
+
+        self._interface = interface
+
+    
+    @property
+    def interface(self):
+        return self._interface
+    
+    def __repr__(self):
+        s = super().__repr__()
+        return f"{s} ({self.interface}"
+    
